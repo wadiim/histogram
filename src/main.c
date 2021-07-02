@@ -68,7 +68,11 @@ int main(int argc, char **argv)
 			{
 				layout = VERTICAL;
 			}
-			else if (strcmp(arg, "horizontal") != 0)
+			else if (strcmp(arg, "horizontal") == 0)
+			{
+				layout = HORIZONTAL;
+			}
+			else
 			{
 				fprintf(stderr, "%s: Invalid argument '%s' "\
 						"for '%s'\nValid arguments "\
