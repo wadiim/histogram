@@ -24,40 +24,24 @@ typedef struct
  */
 static Options *parse_args(int argc, char **argv);
 
+/*
+ * Reads integers from the standard input and stores them in the array 'input'.
+ * The 'input' array is assumed to be NULL and should be freed by the caller.
+ * Returns zero on success and non-zero on failure.
+ */
+static int get_input(int *input[], int *input_len);
+
 int main(int argc, char **argv)
 {
 	char *hist;
 	Options *opts;
-	int buffsize = 32;
+
+	int *input = NULL;
 	int input_len = 0;
-	int *input = malloc(buffsize*sizeof(int));
-	if (input == NULL)
-	{
-		perror(argv[0]);
-		exit(errno);
-	}
 
 	opts = parse_args(argc, argv);
 
-	/* Get input. */
-	while (scanf("%d", &input[input_len]) == 1)
-	{
-		++input_len;
-		if (input_len >= buffsize)
-		{
-			input = realloc(input, (buffsize*2)*sizeof(int));
-			if (input == NULL)
-			{
-				perror(argv[0]);
-				exit(errno);
-			}
-			buffsize *= 2;
-		}
-	}
-
-	/* Free up unused memory. */
-	input = realloc(input, input_len*sizeof(int));
-	if (input == NULL && input_len > 0)
+	if (get_input(&input, &input_len) != 0)
 	{
 		perror(argv[0]);
 		exit(errno);
@@ -179,4 +163,38 @@ static Options *parse_args(int argc, char **argv)
 	}
 
 	return opts;
+}
+
+static int get_input(int *input[], int *input_len)
+{
+	int buffsize = 32;
+
+	*input_len = 0;
+	*input = malloc(buffsize*sizeof(int));
+	if (input == NULL)
+	{
+		return -1;
+	}
+
+	while (scanf("%d", &(*input)[*input_len]) == 1)
+	{
+		++(*input_len);
+		if (*input_len >= buffsize)
+		{
+			*input = realloc(*input, (buffsize*2)*sizeof(int));
+			if (*input == NULL)
+			{
+				return -1;
+			}
+			buffsize *= 2;
+		}
+	}
+
+	*input = realloc(*input, (*input_len)*sizeof(int));
+	if (*input == NULL && *input_len > 0)
+	{
+		return -1;
+	}
+
+	return 0;
 }
