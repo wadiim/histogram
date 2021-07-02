@@ -11,6 +11,7 @@ enum Layout { HORIZONTAL, VERTICAL };
 int main(int argc, char **argv)
 {
 	int i;
+	char c;
 	char *hist;
 
 	int layout = HORIZONTAL;
@@ -82,6 +83,27 @@ int main(int argc, char **argv)
 				exit(EXIT_FAILURE);
 			}
 		}
+		else if (strcmp(opt, "--char") == 0)
+		{
+			if (arg == NULL)
+			{
+				fprintf(stderr, "%s: Argument missing after: "\
+						"'%s'\n", argv[0], opt);
+				exit(EXIT_FAILURE);
+			}
+			else if (strlen(arg) == 1)
+			{
+				c = arg[0];
+			}
+			else
+			{
+				fprintf(stderr, "%s: Invalid argument '%s' "\
+						"for '%s'\nShould be a "\
+						"single character\n",
+						argv[0], arg, opt);
+				exit(EXIT_FAILURE);
+			}
+		}
 
 		free(opt);
 	}
@@ -112,11 +134,11 @@ int main(int argc, char **argv)
 
 	if (layout == HORIZONTAL)
 	{
-		hist = generate_horizontal_histogram(input, input_len, '#');
+		hist = generate_horizontal_histogram(input, input_len, c);
 	}
 	else
 	{
-		hist = generate_vertical_histogram(input, input_len, '#');
+		hist = generate_vertical_histogram(input, input_len, c);
 	}
 	printf("%s\n", hist);
 
