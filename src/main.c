@@ -15,6 +15,7 @@ enum Layout
 typedef struct
 {
 	char c;
+	bool help;
 	int layout;
 } Options;
 
@@ -31,6 +32,8 @@ static Options *parse_args(int argc, char **argv);
  */
 static int get_input(int *input[], int *input_len);
 
+static void show_usage(char *program_name);
+
 int main(int argc, char **argv)
 {
 	char *hist;
@@ -40,6 +43,12 @@ int main(int argc, char **argv)
 	int input_len = 0;
 
 	opts = parse_args(argc, argv);
+
+	if (opts->help == true)
+	{
+		free(opts);
+		exit(EXIT_SUCCESS);
+	}
 
 	if (get_input(&input, &input_len) != 0)
 	{
@@ -79,6 +88,7 @@ static Options *parse_args(int argc, char **argv)
 		exit(errno);
 	}
 	opts->c = '#';
+	opts->help = false;
 	opts->layout = HORIZONTAL;
 
 	for (i = 1; i < argc; ++i)
@@ -158,6 +168,11 @@ static Options *parse_args(int argc, char **argv)
 				exit(EXIT_FAILURE);
 			}
 		}
+		else if (strcmp(opt, "--help") == 0)
+		{
+			show_usage(argv[0]);
+			opts->help = true;
+		}
 
 		free(opt);
 	}
@@ -197,4 +212,17 @@ static int get_input(int *input[], int *input_len)
 	}
 
 	return 0;
+}
+
+static void show_usage(char *program_name)
+{
+	printf("\
+Usage: %s [OPTIONS]\n\n\
+Generate a histogram from integers given on stdin.\n\n\
+Options:\n\
+  --char <char>     Specify the character used for printing the histogram.\n\
+  --help            Show help message and exit.\n\
+  --layout <layout> Specify the layout of the bars in the histogram.\n\
+                    <layout> can be 'horizontal' or 'vertical'.\n\
+", program_name);
 }
