@@ -173,6 +173,12 @@ static Options *parse_args(int argc, char **argv)
 			show_usage(argv[0]);
 			opts->help = true;
 		}
+		else
+		{
+			fprintf(stderr, "%s: Invalid option '%s'\n",
+					argv[0], opt);
+			exit(EXIT_FAILURE);
+		}
 
 		free(opt);
 	}
