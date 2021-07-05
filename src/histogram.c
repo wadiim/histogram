@@ -3,13 +3,13 @@
 
 #include <stdlib.h>
 
-char* generate_horizontal_histogram(int values[], int values_len, char c)
+char* generate_horizontal_histogram(int values[], size_t values_len, char c)
 {
-	int str_len = sum(values, values_len) + values_len - 1;
+	size_t str_len = sum(values, values_len) + values_len - 1;
 	char *str = malloc((str_len + 1)*sizeof(char));
-	int pos = 0;
 
-	int i, j;
+	size_t i, pos = 0;
+	int j;
 	for (i = 0; i < values_len; ++i)
 	{
 		for (j = 0; j < values[i]; ++j)
@@ -23,19 +23,19 @@ char* generate_horizontal_histogram(int values[], int values_len, char c)
 	return str;
 }
 
-char* generate_vertical_histogram(int values[], int values_len, char c)
+char* generate_vertical_histogram(int values[], size_t values_len, char c)
 {
-	int rows = maxval(values, values_len);
-	int str_len = rows*(values_len + 1) - 1;
+	int height = max_val(values, values_len);
+	size_t str_len = height*(values_len + 1) - 1;
 	char *str = malloc((str_len + 1)*sizeof(char));
-	int pos = 0;
 
 	int i;
-	for (; rows > 0; --rows)
+	size_t j, pos = 0;
+	for (i = height; i > 0; --i)
 	{
-		for (i = 0; i < values_len; ++i)
+		for (j = 0; j < values_len; ++j)
 		{
-			if (values[i] >= rows)
+			if (values[j] >= i)
 			{
 				str[pos++] = c;
 			}

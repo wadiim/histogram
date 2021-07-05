@@ -2,17 +2,18 @@
 #define UTILS_H_
 
 #include <stdbool.h>
+#include <stddef.h>
 
 /*
  * Sums the elements in the array 'arr'.
  */
-int sum(int arr[], int len);
+int sum(int arr[], size_t len);
 
 /*
  * Returns the maximum value in the array 'arr'. Assumes that 'arr' has at
  * least one element.
  */
-int maxval(int arr[], int len);
+int max_val(int arr[], size_t len);
 
 /*
  * Test if the string 'str' starts with the character sequence 'prefix'.

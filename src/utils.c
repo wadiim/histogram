@@ -2,11 +2,11 @@
 
 #include <string.h>
 
-int sum(int arr[], int len)
+int sum(int arr[], size_t len)
 {
 	int sum = 0;
 
-	int i;
+	size_t i;
 	for (i = 0; i < len; ++i)
 	{
 		sum += arr[i];
@@ -15,11 +15,11 @@ int sum(int arr[], int len)
 	return sum;
 }
 
-int maxval(int arr[], int len)
+int max_val(int arr[], size_t len)
 {
 	int m = arr[0];
 
-	int i;
+	size_t i;
 	for (i = 1; i < len; ++i)
 	{
 		if (arr[i] > m)
@@ -33,8 +33,8 @@ int maxval(int arr[], int len)
 
 bool starts_with(const char *prefix, const char *str)
 {
-	int prefix_len = strlen(prefix);
-	int str_len = strlen(str);
+	size_t prefix_len = strlen(prefix);
+	size_t str_len = strlen(str);
 
 	return (str_len < prefix_len) ?
 		false : memcmp(prefix, str, prefix_len) == 0;

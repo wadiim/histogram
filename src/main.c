@@ -30,7 +30,7 @@ static Options *parse_args(int argc, char **argv);
  * The 'input' array is assumed to be NULL and should be freed by the caller.
  * Returns zero on success and non-zero on failure.
  */
-static int get_input(int *input[], int *input_len);
+static int get_input(int *input[], size_t *input_len);
 
 static void show_usage(char *program_name);
 
@@ -40,7 +40,7 @@ int main(int argc, char **argv)
 	Options *opts;
 
 	int *input = NULL;
-	int input_len = 0;
+	size_t input_len = 0;
 
 	opts = parse_args(argc, argv);
 
@@ -58,13 +58,11 @@ int main(int argc, char **argv)
 
 	if (opts->layout == HORIZONTAL)
 	{
-		hist = generate_horizontal_histogram(input, input_len,
-				opts->c);
+		hist = generate_horizontal_histogram(input, input_len, opts->c);
 	}
 	else
 	{
-		hist = generate_vertical_histogram(input, input_len,
-				opts->c);
+		hist = generate_vertical_histogram(input, input_len, opts->c);
 	}
 	printf("%s\n", hist);
 
@@ -72,7 +70,7 @@ int main(int argc, char **argv)
 	free(opts);
 	free(input);
 
-	return 0;
+	return EXIT_SUCCESS;
 }
 
 static Options *parse_args(int argc, char **argv)
@@ -105,19 +103,20 @@ static Options *parse_args(int argc, char **argv)
 		arg = strchr(argv[i], '=');
 		if (arg != NULL)
 		{
-			int opt_len = arg - argv[i];
-			opt = malloc((opt_len+1)*sizeof(char));
+			ptrdiff_t opt_len = arg - argv[i];
+			opt = malloc((opt_len + 1)*sizeof(char));
 			memcpy(opt, argv[i], opt_len);
 			opt[opt_len] = '\0';
 			++arg;
 		}
 		else
 		{
-			opt = malloc((strlen(argv[i])+1)*sizeof(char));
+			opt = malloc((strlen(argv[i]) + 1)*sizeof(char));
 			strcpy(opt, argv[i]);
-			if (i < argc-1 && starts_with("--", argv[i+1]) == false)
+			if (i + 1 < argc &&
+				starts_with("--", argv[i + 1]) == false)
 			{
-				arg = argv[i+1];
+				arg = argv[i + 1];
 			}
 		}
 
@@ -186,12 +185,12 @@ static Options *parse_args(int argc, char **argv)
 	return opts;
 }
 
-static int get_input(int *input[], int *input_len)
+static int get_input(int *input[], size_t *input_len)
 {
-	int buffsize = 32;
+	size_t buff_size = 32;
 
 	*input_len = 0;
-	*input = malloc(buffsize*sizeof(int));
+	*input = malloc(buff_size*sizeof(int));
 	if (input == NULL)
 	{
 		return -1;
@@ -200,14 +199,14 @@ static int get_input(int *input[], int *input_len)
 	while (scanf("%d", &(*input)[*input_len]) == 1)
 	{
 		++(*input_len);
-		if (*input_len >= buffsize)
+		if (*input_len >= buff_size)
 		{
-			*input = realloc(*input, (buffsize*2)*sizeof(int));
+			*input = realloc(*input, buff_size*2*sizeof(int));
 			if (*input == NULL)
 			{
 				return -1;
 			}
-			buffsize *= 2;
+			buff_size *= 2;
 		}
 	}
 
