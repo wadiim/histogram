@@ -5,11 +5,6 @@
 #include <stddef.h>
 
 /*
- * Sums the elements in the array 'arr'.
- */
-int sum(int arr[], size_t len);
-
-/*
  * Sums the positive elements in the array 'arr'.
  */
 int sum_positive(int arr[], size_t len);

@@ -3,19 +3,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-int sum(int arr[], size_t len)
-{
-	int sum = 0;
-
-	size_t i;
-	for (i = 0; i < len; ++i)
-	{
-		sum += arr[i];
-	}
-
-	return sum;
-}
-
 int sum_positive(int arr[], size_t len)
 {
 	int sum = 0;
