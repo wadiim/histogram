@@ -19,36 +19,44 @@ int sum_positive(int arr[], size_t len)
 	return sum;
 }
 
-int max_val(int arr[], size_t len)
+void minmax(int *minptr, int *maxptr, int arr[], size_t len)
 {
-	int m = arr[0];
-
 	size_t i;
-	for (i = 1; i < len; ++i)
+
+	if (minptr != NULL)
 	{
-		if (arr[i] > m)
-		{
-			m = arr[i];
-		}
+		*minptr = arr[0];
+	}
+	if (maxptr != NULL)
+	{
+		*maxptr = arr[0];
 	}
 
-	return m;
+	for (i = 1; i < len; ++i)
+	{
+		if (minptr != NULL && arr[i] < *minptr)
+		{
+			*minptr = arr[i];
+		}
+		else if (maxptr != NULL && arr[i] > *maxptr)
+		{
+			*maxptr = arr[i];
+		}
+	}
 }
 
 int min_val(int arr[], size_t len)
 {
-	int m = arr[0];
+	int minv;
+	minmax(&minv, NULL, arr, len);
+	return minv;
+}
 
-	size_t i;
-	for (i = 0; i < len; ++i)
-	{
-		if (arr[i] < m)
-		{
-			m = arr[i];
-		}
-	}
-
-	return m;
+int max_val(int arr[], size_t len)
+{
+	int maxv;
+	minmax(NULL, &maxv, arr, len);
+	return maxv;
 }
 
 bool starts_with(const char *prefix, const char *str)
