@@ -16,34 +16,20 @@ char* generate_horizontal_histogram(int values[], size_t values_len, char c)
 	int j;
 	for (i = 0; i < values_len; ++i)
 	{
-		if (values[i] < 0)
+		for (j = bottom; j <= ((values[i] > 0) ? values[i] : 0); ++j)
 		{
-			for (j = bottom; j < 0; ++j)
+			if (j == 0 && bottom < 0)
 			{
-				if (j < values[i])
-				{
-					str[pos++] = ' ';
-				}
-				else
-				{
-					str[pos++] = c;
-				}
-			}
-			str[pos++] = '|';
-		}
-		else
-		{
-			if (bottom < 0)
-			{
-				for (j = bottom; j < 0; ++j)
-				{
-					str[pos++] = ' ';
-				}
 				str[pos++] = '|';
 			}
-			for (j = 0; j < values[i]; ++j)
+			else if (j > 0 && values[i] > 0 && values[i] >= j
+				|| j < 0 && values[i] < 0 && values[i] <= j)
 			{
 				str[pos++] = c;
+			}
+			else if (j != 0)
+			{
+				str[pos++] = ' ';
 			}
 		}
 		str[pos++] = '\n';
