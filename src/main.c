@@ -225,7 +225,8 @@ static void show_usage(char *program_name)
 Usage: %s [OPTIONS]\n\n\
 Generate a histogram from integers given on stdin.\n\n\
 Options:\n\
-  --char <char>     Specify the character used for printing the histogram.\n\
+  --char <char>     Specify the ASCII character used for printing the\n\
+                    histogram.\n\
   --help            Show help message and exit.\n\
   --layout <layout> Specify the layout of the bars in the histogram.\n\
                     <layout> can be 'horizontal' or 'vertical'.\n\
