@@ -17,4 +17,9 @@ char* generate_horizontal_histogram(int values[], size_t values_len, char c);
  */
 char* generate_vertical_histogram(int values[], size_t values_len, char c);
 
+/*
+ * Generates horizontal histogram using Unicode Box Drawing Characters.
+ */
+char* generate_pretty_horizontal_histogram(int values[], size_t values_len);
+
 #endif /* HISTOGRAM_H_ */

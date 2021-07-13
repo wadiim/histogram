@@ -17,6 +17,7 @@ typedef struct
 	char c;
 	bool help;
 	int layout;
+	bool pretty;
 } Options;
 
 /*
@@ -58,7 +59,16 @@ int main(int argc, char **argv)
 
 	if (opts->layout == HORIZONTAL)
 	{
-		hist = generate_horizontal_histogram(input, input_len, opts->c);
+		if (opts->pretty == true)
+		{
+			hist = generate_pretty_horizontal_histogram(input,
+					input_len);
+		}
+		else
+		{
+			hist = generate_horizontal_histogram(input,
+					input_len, opts->c);
+		}
 	}
 	else
 	{
@@ -88,6 +98,7 @@ static Options *parse_args(int argc, char **argv)
 	opts->c = '#';
 	opts->help = false;
 	opts->layout = HORIZONTAL;
+	opts->pretty = false;
 
 	for (i = 1; i < argc; ++i)
 	{
@@ -166,6 +177,10 @@ static Options *parse_args(int argc, char **argv)
 						argv[0], arg, opt);
 				exit(EXIT_FAILURE);
 			}
+		}
+		else if (strcmp(opt, "--pretty") == 0)
+		{
+			opts->pretty = true;
 		}
 		else if (strcmp(opt, "--help") == 0)
 		{
