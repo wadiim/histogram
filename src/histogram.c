@@ -17,45 +17,42 @@
 #define UP_AND_HORIZONTAL "\xE2\x94\xB4"
 #define VERTICAL_AND_HORIZONTAL "\xE2\x94\xBC"
 
-/* The lenght of a single Box Drawing Character */
-#define BOX_CHAR_LEN 3
-
 #define MAX(a,b) (((a)>(b))?(a):(b))
 
 char* generate_horizontal_histogram(int values[], size_t values_len, char c)
 {
 	int minv = min_val(values, values_len);
 	int bottom = (minv < 0) ? minv : 0;
-	size_t bottom_area = (bottom < 0) ? (abs(bottom) + 1)*(values_len) : 0;
-	size_t str_len = sum_positive(values, values_len) +
-	       bottom_area + values_len - 1;
-	char *str = malloc((str_len + 1)*sizeof(char));
-
-	size_t i, pos = 0;
+	size_t i;
 	int j;
+	String str;
+	String_init(&str);
+
 	for (i = 0; i < values_len; ++i)
 	{
 		for (j = bottom; j <= ((values[i] > 0) ? values[i] : 0); ++j)
 		{
 			if (j == 0 && bottom < 0)
 			{
-				str[pos++] = '|';
+				String_append_char(&str, '|');
 			}
 			else if ((j > 0 && values[i] > 0 && values[i] >= j)
 				|| (j < 0 && values[i] < 0 && values[i] <= j))
 			{
-				str[pos++] = c;
+				String_append_char(&str, c);
 			}
 			else if (j != 0)
 			{
-				str[pos++] = ' ';
+				String_append_char(&str, ' ');
 			}
 		}
-		str[pos++] = '\n';
+		if (i != values_len - 1)
+		{
+			String_append_char(&str, '\n');
+		}
 	}
-	str[str_len] = '\0';
 
-	return str;
+	return str.data;
 }
 
 char* generate_vertical_histogram(int values[], size_t values_len, char c)
@@ -63,49 +60,47 @@ char* generate_vertical_histogram(int values[], size_t values_len, char c)
 	int top = max_val(values, values_len);
 	int minv = min_val(values, values_len);
 	int bottom = (minv < 0) ? minv : 0;
-	size_t str_len = (top - bottom + ((minv < 0) ? 1 : 0))
-		*(values_len + 1) - 1;
-	char *str = malloc((str_len + 1)*sizeof(char));
-
 	int i;
-	size_t j, pos = 0;
+	size_t j;
+	String str;
+	String_init(&str);
+
 	for (i = top; i >= ((bottom < 0) ? bottom : 1); --i)
 	{
 		for (j = 0; j < values_len; ++j)
 		{
 			if (i == 0)
 			{
-				str[pos++] = '-';
+				String_append_char(&str, '-');
 			}
 			else if ((i > 0 && values[j] > 0 && values[j] >= i)
 				|| (i < 0 && values[j] < 0 && values[j] <= i))
 			{
-				str[pos++] = c;
+				String_append_char(&str, c);
 			}
 			else
 			{
-				str[pos++] = ' ';
+				String_append_char(&str, ' ');
 			}
 		}
-		str[pos++] = '\n';
+		if (i > ((bottom < 0) ? bottom : 1))
+		{
+			String_append_char(&str, '\n');
+		}
 	}
 
-	str[str_len] = '\0';
-
-	return str;
+	return str.data;
 }
 
 char* generate_pretty_horizontal_histogram(int values[], size_t values_len)
 {
 	int minv = min_val(values, values_len);
 	int bottom = (minv < 0) ? minv : 0;
-	size_t bottom_area = (bottom < 0) ? (abs(bottom) + 1)*(values_len) : 0;
-	size_t str_len = 27*(sum_positive(values, values_len) +
-	       bottom_area + values_len) - 1;
-	char *str = malloc((str_len + 1)*sizeof(char));
-
-	size_t i, pos = 0;
+	size_t i;
 	int j;
+	String str;
+	String_init(&str);
+
 	for (i = 0; i <= values_len*2; ++i)
 	{
 		if (i % 2 != 0)
@@ -116,13 +111,11 @@ char* generate_pretty_horizontal_histogram(int values[], size_t values_len)
 			{
 				if (j == 0 || j == values[curr_idx])
 				{
-					memcpy(str + pos, VERTICAL,
-							BOX_CHAR_LEN);
-					pos += BOX_CHAR_LEN;
+					String_append(&str, VERTICAL);
 				}
 				else
 				{
-					str[pos++] = ' ';
+					String_append_char(&str, ' ');
 				}
 			}
 		}
@@ -140,76 +133,63 @@ char* generate_pretty_horizontal_histogram(int values[], size_t values_len)
 					{
 						if (values[next_idx] == 0)
 						{
-							memcpy(str + pos,
-								VERTICAL,
-								BOX_CHAR_LEN);
+							String_append(&str,
+								VERTICAL);
 						}
 						else if (values[next_idx] >= 0)
 						{
-							memcpy(str + pos,
-								DOWN_AND_RIGHT,
-								BOX_CHAR_LEN);
+							String_append(&str,
+								DOWN_AND_RIGHT);
 						}
 						else
 						{
-							memcpy(str + pos,
-								DOWN_AND_LEFT,
-								BOX_CHAR_LEN);
+							String_append(&str,
+								DOWN_AND_LEFT);
 						}
-						pos += BOX_CHAR_LEN;
 					}
 					else if (next_idx == values_len)
 					{
 						if (values[prev_idx] == 0)
 						{
-							memcpy(str + pos,
-								VERTICAL,
-								BOX_CHAR_LEN);
+							String_append(&str,
+								VERTICAL);
 						}
 						else if (values[prev_idx] > 0)
 						{
-							memcpy(str + pos,
-								UP_AND_RIGHT,
-								BOX_CHAR_LEN);
+							String_append(&str,
+								UP_AND_RIGHT);
 						}
 						else
 						{
-							memcpy(str + pos,
-								UP_AND_LEFT,
-								BOX_CHAR_LEN);
+							String_append(&str,
+								UP_AND_LEFT);
 						}
-						pos += BOX_CHAR_LEN;
 					}
 					else
 					{
 						if (values[prev_idx] == 0
 							&& values[next_idx] == 0)
 						{
-							memcpy(str + pos,
-								VERTICAL,
-								BOX_CHAR_LEN);
+							String_append(&str,
+								VERTICAL);
 						}
 						else if (values[prev_idx] <= 0
 							&& values[next_idx] <= 0)
 						{
-							memcpy(str + pos,
-								VERTICAL_AND_LEFT,
-								BOX_CHAR_LEN);
+							String_append(&str,
+								VERTICAL_AND_LEFT);
 						}
 						else if (values[prev_idx] >= 0
 							&& values[next_idx] >= 0)
 						{
-							memcpy(str + pos,
-								VERTICAL_AND_RIGHT,
-								BOX_CHAR_LEN);
+							String_append(&str,
+								VERTICAL_AND_RIGHT);
 						}
 						else
 						{
-							memcpy(str + pos,
-								VERTICAL_AND_HORIZONTAL,
-								BOX_CHAR_LEN);
+							String_append(&str,
+								VERTICAL_AND_HORIZONTAL);
 						}
-						pos += BOX_CHAR_LEN;
 					}
 				}
 				else if (j < 0)
@@ -218,42 +198,34 @@ char* generate_pretty_horizontal_histogram(int values[], size_t values_len)
 					{
 						if (j < values[next_idx])
 						{
-							str[pos++] = ' ';
+							String_append_char(&str, ' ');
 						}
 						else if (j == values[next_idx])
 						{
-							memcpy(str + pos,
-								DOWN_AND_RIGHT,
-								BOX_CHAR_LEN);
-							pos += BOX_CHAR_LEN;
+							String_append(&str,
+								DOWN_AND_RIGHT);
 						}
 						else
 						{
-							memcpy(str + pos,
-								HORIZONTAL,
-								BOX_CHAR_LEN);
-							pos += BOX_CHAR_LEN;
+							String_append(&str,
+								HORIZONTAL);
 						}
 					}
 					else if (next_idx == values_len)
 					{
 						if (j < values[prev_idx])
 						{
-							str[pos++] = ' ';
+							String_append_char(&str, ' ');
 						}
 						else if (j == values[prev_idx])
 						{
-							memcpy(str + pos,
-								UP_AND_RIGHT,
-								BOX_CHAR_LEN);
-							pos += BOX_CHAR_LEN;
+							String_append(&str,
+								UP_AND_RIGHT);
 						}
 						else
 						{
-							memcpy(str + pos,
-								HORIZONTAL,
-								BOX_CHAR_LEN);
-							pos += BOX_CHAR_LEN;
+							String_append(&str,
+								HORIZONTAL);
 						}
 					}
 					else
@@ -261,54 +233,42 @@ char* generate_pretty_horizontal_histogram(int values[], size_t values_len)
 						if (j < values[prev_idx]
 							&& j < values[next_idx])
 						{
-							str[pos++] = ' ';
+							String_append_char(&str, ' ');
 						}
 						else if (j != values[prev_idx]
 							&& j != values[next_idx])
 						{
-							memcpy(str + pos,
-								HORIZONTAL,
-								BOX_CHAR_LEN);
-							pos += BOX_CHAR_LEN;
+							String_append(&str,
+								HORIZONTAL);
 						}
 						else if (j == values[prev_idx]
 							&& j == values[next_idx])
 						{
-							memcpy(str + pos,
-								VERTICAL_AND_RIGHT,
-								BOX_CHAR_LEN);
-							pos += BOX_CHAR_LEN;
+							String_append(&str,
+								VERTICAL_AND_RIGHT);
 						}
 						else if (j == values[prev_idx]
 							&& j < values[next_idx])
 						{
-							memcpy(str + pos,
-								UP_AND_RIGHT,
-								BOX_CHAR_LEN);
-							pos += BOX_CHAR_LEN;
+							String_append(&str,
+								UP_AND_RIGHT);
 						}
 						else if (j == values[prev_idx]
 							&& j > values[next_idx])
 						{
-							memcpy(str + pos,
-								UP_AND_HORIZONTAL,
-								BOX_CHAR_LEN);
-							pos += BOX_CHAR_LEN;
+							String_append(&str,
+								UP_AND_HORIZONTAL);
 						}
 						else if (j < values[prev_idx]
 							&& j == values[next_idx])
 						{
-							memcpy(str + pos,
-								DOWN_AND_RIGHT,
-								BOX_CHAR_LEN);
-							pos += BOX_CHAR_LEN;
+							String_append(&str,
+								DOWN_AND_RIGHT);
 						}
 						else
 						{
-							memcpy(str + pos,
-								DOWN_AND_HORIZONTAL,
-								BOX_CHAR_LEN);
-							pos += BOX_CHAR_LEN;
+							String_append(&str,
+								DOWN_AND_HORIZONTAL);
 						}
 					}
 				}
@@ -318,42 +278,34 @@ char* generate_pretty_horizontal_histogram(int values[], size_t values_len)
 					{
 						if (j > values[next_idx])
 						{
-							str[pos++] = ' ';
+							String_append_char(&str, ' ');
 						}
 						else if (j == values[next_idx])
 						{
-							memcpy(str + pos,
-								DOWN_AND_LEFT,
-								BOX_CHAR_LEN);
-							pos += BOX_CHAR_LEN;
+							String_append(&str,
+								DOWN_AND_LEFT);
 						}
 						else
 						{
-							memcpy(str + pos,
-								HORIZONTAL,
-								BOX_CHAR_LEN);
-							pos += BOX_CHAR_LEN;
+							String_append(&str,
+								HORIZONTAL);
 						}
 					}
 					else if (next_idx == values_len)
 					{
 						if (j > values[prev_idx])
 						{
-							str[pos++] = ' ';
+							String_append_char(&str, ' ');
 						}
 						else if (j == values[prev_idx])
 						{
-							memcpy(str + pos,
-								UP_AND_LEFT,
-								BOX_CHAR_LEN);
-							pos += BOX_CHAR_LEN;
+							String_append(&str,
+								UP_AND_LEFT);
 						}
 						else
 						{
-							memcpy(str + pos,
-								HORIZONTAL,
-								BOX_CHAR_LEN);
-							pos += BOX_CHAR_LEN;
+							String_append(&str,
+								HORIZONTAL);
 						}
 					}
 					else
@@ -361,64 +313,54 @@ char* generate_pretty_horizontal_histogram(int values[], size_t values_len)
 						if (j > values[prev_idx]
 							&& j > values[next_idx])
 						{
-							str[pos++] = ' ';
+							String_append_char(&str, ' ');
 						}
 						else if (j != values[prev_idx]
 							&& j != values[next_idx])
 						{
-							memcpy(str + pos,
-								HORIZONTAL,
-								BOX_CHAR_LEN);
-							pos += BOX_CHAR_LEN;
+							String_append(&str,
+								HORIZONTAL);
 						}
 						else if (j == values[prev_idx]
 							&& j == values[next_idx])
 						{
-							memcpy(str + pos,
-								VERTICAL_AND_LEFT,
-								BOX_CHAR_LEN);
-							pos += BOX_CHAR_LEN;
+							String_append(&str,
+								VERTICAL_AND_LEFT);
 						}
 						else if (j == values[prev_idx]
 							&& j < values[next_idx])
 						{
-							memcpy(str + pos,
-								UP_AND_HORIZONTAL,
-								BOX_CHAR_LEN);
-							pos += BOX_CHAR_LEN;
+							String_append(&str,
+								UP_AND_HORIZONTAL);
 						}
 						else if (j == values[prev_idx]
 							&& j > values[next_idx])
 						{
-							memcpy(str + pos,
-								UP_AND_LEFT,
-								BOX_CHAR_LEN);
-							pos += BOX_CHAR_LEN;
+							String_append(&str,
+								UP_AND_LEFT);
 						}
 						else if (j < values[prev_idx]
 							&& j == values[next_idx])
 						{
-							memcpy(str + pos,
-								DOWN_AND_HORIZONTAL,
-								BOX_CHAR_LEN);
-							pos += BOX_CHAR_LEN;
+							String_append(&str,
+								DOWN_AND_HORIZONTAL);
 						}
 						else
 						{
-							memcpy(str + pos,
-								DOWN_AND_LEFT,
-								BOX_CHAR_LEN);
-							pos += BOX_CHAR_LEN;
+							String_append(&str,
+								DOWN_AND_LEFT);
 						}
 					}
 				}
 			}
 		}
-		str[pos++] = '\n';
+		if (i < values_len*2)
+		{
+			String_append_char(&str, '\n');
+		}
 	}
-	str[pos] = '\0';
 
-	return str;
+	return str.data;
 }
 
 char* generate_pretty_vertical_histogram(int values[], size_t values_len)
@@ -426,12 +368,11 @@ char* generate_pretty_vertical_histogram(int values[], size_t values_len)
 	int top = max_val(values, values_len);
 	int minv = min_val(values, values_len);
 	int bottom = (minv < 0) ? minv : 0;
-	size_t str_len = 27*(top - bottom + ((minv < 0) ? 1 : 0))
-		*(values_len + 1) - 1;
-	char *str = malloc((str_len + 1)*sizeof(char));
-
 	int i;
-	size_t j, pos = 0;
+	size_t j;
+	String str;
+	String_init(&str);
+
 	for (i = top; i >= bottom; --i)
 	{
 		for (j = 0; j <= 2*values_len; ++j)
@@ -442,13 +383,11 @@ char* generate_pretty_vertical_histogram(int values[], size_t values_len)
 
 				if (i == 0 || i == values[curr_idx])
 				{
-					memcpy(str + pos, HORIZONTAL,
-						BOX_CHAR_LEN);
-					pos += BOX_CHAR_LEN;
+					String_append(&str, HORIZONTAL);
 				}
 				else
 				{
-					str[pos++] = ' ';
+					String_append_char(&str, ' ');
 				}
 			}
 			else
@@ -463,76 +402,63 @@ char* generate_pretty_vertical_histogram(int values[], size_t values_len)
 					{
 						if (values[next_idx] == 0)
 						{
-							memcpy(str + pos,
-								HORIZONTAL,
-								BOX_CHAR_LEN);
+							String_append(&str,
+								HORIZONTAL);
 						}
 						else if (values[next_idx] > 0)
 						{
-							memcpy(str + pos,
-								UP_AND_RIGHT,
-								BOX_CHAR_LEN);
+							String_append(&str,
+								UP_AND_RIGHT);
 						}
 						else
 						{
-							memcpy(str + pos,
-								DOWN_AND_RIGHT,
-								BOX_CHAR_LEN);
+							String_append(&str,
+								DOWN_AND_RIGHT);
 						}
-						pos += BOX_CHAR_LEN;
 					}
 					else if (next_idx == values_len)
 					{
 						if (values[prev_idx] == 0)
 						{
-							memcpy(str + pos,
-								HORIZONTAL,
-								BOX_CHAR_LEN);
+							String_append(&str,
+								HORIZONTAL);
 						}
 						else if (values[prev_idx] > 0)
 						{
-							memcpy(str + pos,
-								UP_AND_LEFT,
-								BOX_CHAR_LEN);
+							String_append(&str,
+								UP_AND_LEFT);
 						}
 						else
 						{
-							memcpy(str + pos,
-								DOWN_AND_LEFT,
-								BOX_CHAR_LEN);
+							String_append(&str,
+								DOWN_AND_LEFT);
 						}
-						pos += BOX_CHAR_LEN;
 					}
 					else
 					{
 						if (values[prev_idx] == 0
 							&& values[next_idx] == 0)
 						{
-							memcpy(str + pos,
-								HORIZONTAL,
-								BOX_CHAR_LEN);
+							String_append(&str,
+								HORIZONTAL);
 						}
 						else if (values[prev_idx] <= 0
 							&& values[next_idx] <= 0)
 						{
-							memcpy(str + pos,
-								DOWN_AND_HORIZONTAL,
-								BOX_CHAR_LEN);
+							String_append(&str,
+								DOWN_AND_HORIZONTAL);
 						}
 						else if (values[prev_idx] >= 0
 							&& values[next_idx] >= 0)
 						{
-							memcpy(str + pos,
-								UP_AND_HORIZONTAL,
-								BOX_CHAR_LEN);
+							String_append(&str,
+								UP_AND_HORIZONTAL);
 						}
 						else
 						{
-							memcpy(str + pos,
-								VERTICAL_AND_HORIZONTAL,
-								BOX_CHAR_LEN);
+							String_append(&str,
+								VERTICAL_AND_HORIZONTAL);
 						}
-						pos += BOX_CHAR_LEN;
 					}
 				}
 				else if (i < 0)
@@ -541,42 +467,34 @@ char* generate_pretty_vertical_histogram(int values[], size_t values_len)
 					{
 						if (i < values[next_idx])
 						{
-							str[pos++] = ' ';
+							String_append_char(&str, ' ');
 						}
 						else if (i == values[next_idx])
 						{
-							memcpy(str + pos,
-								DOWN_AND_RIGHT,
-								BOX_CHAR_LEN);
-							pos += BOX_CHAR_LEN;
+							String_append(&str,
+								DOWN_AND_RIGHT);
 						}
 						else
 						{
-							memcpy(str + pos,
-								VERTICAL,
-								BOX_CHAR_LEN);
-							pos += BOX_CHAR_LEN;
+							String_append(&str,
+								VERTICAL);
 						}
 					}
 					else if (next_idx == values_len)
 					{
 						if (i < values[prev_idx])
 						{
-							str[pos++] = ' ';
+							String_append_char(&str, ' ');
 						}
 						else if (i == values[prev_idx])
 						{
-							memcpy(str + pos,
-								UP_AND_LEFT,
-								BOX_CHAR_LEN);
-							pos += BOX_CHAR_LEN;
+							String_append(&str,
+								UP_AND_LEFT);
 						}
 						else
 						{
-							memcpy(str + pos,
-								VERTICAL,
-								BOX_CHAR_LEN);
-							pos += BOX_CHAR_LEN;
+							String_append(&str,
+								VERTICAL);
 						}
 					}
 					else
@@ -584,54 +502,42 @@ char* generate_pretty_vertical_histogram(int values[], size_t values_len)
 						if (i < values[prev_idx]
 							&& i < values[next_idx])
 						{
-							str[pos++] = ' ';
+							String_append_char(&str, ' ');
 						}
 						else if (i != values[prev_idx]
 							&& i != values[next_idx])
 						{
-							memcpy(str + pos,
-								VERTICAL,
-								BOX_CHAR_LEN);
-							pos += BOX_CHAR_LEN;
+							String_append(&str,
+								VERTICAL);
 						}
 						else if (i == values[prev_idx]
 							&& i == values[next_idx])
 						{
-							memcpy(str + pos,
-								UP_AND_HORIZONTAL,
-								BOX_CHAR_LEN);
-							pos += BOX_CHAR_LEN;
+							String_append(&str,
+								UP_AND_HORIZONTAL);
 						}
 						else if (i == values[prev_idx]
 							&& i < values[next_idx])
 						{
-							memcpy(str + pos,
-								UP_AND_LEFT,
-								BOX_CHAR_LEN);
-							pos += BOX_CHAR_LEN;
+							String_append(&str,
+								UP_AND_LEFT);
 						}
 						else if (i == values[prev_idx]
 							&& i > values[next_idx])
 						{
-							memcpy(str + pos,
-								VERTICAL_AND_LEFT,
-								BOX_CHAR_LEN);
-							pos += BOX_CHAR_LEN;
+							String_append(&str,
+								VERTICAL_AND_LEFT);
 						}
 						else if (i < values[prev_idx]
 							&& i == values[next_idx])
 						{
-							memcpy(str + pos,
-								UP_AND_RIGHT,
-								BOX_CHAR_LEN);
-							pos += BOX_CHAR_LEN;
+							String_append(&str,
+								UP_AND_RIGHT);
 						}
 						else
 						{
-							memcpy(str + pos,
-								VERTICAL_AND_RIGHT,
-								BOX_CHAR_LEN);
-							pos += BOX_CHAR_LEN;
+							String_append(&str,
+								VERTICAL_AND_RIGHT);
 						}
 					}
 				}
@@ -641,42 +547,34 @@ char* generate_pretty_vertical_histogram(int values[], size_t values_len)
 					{
 						if (i > values[next_idx])
 						{
-							str[pos++] = ' ';
+							String_append_char(&str, ' ');
 						}
 						else if (i == values[next_idx])
 						{
-							memcpy(str + pos,
-								DOWN_AND_RIGHT,
-								BOX_CHAR_LEN);
-							pos += BOX_CHAR_LEN;
+							String_append(&str,
+								DOWN_AND_RIGHT);
 						}
 						else
 						{
-							memcpy(str + pos,
-								VERTICAL,
-								BOX_CHAR_LEN);
-							pos += BOX_CHAR_LEN;
+							String_append(&str,
+								VERTICAL);
 						}
 					}
 					else if (next_idx == values_len)
 					{
 						if (i > values[prev_idx])
 						{
-							str[pos++] = ' ';
+							String_append_char(&str, ' ');
 						}
 						else if (i == values[prev_idx])
 						{
-							memcpy(str + pos,
-								DOWN_AND_LEFT,
-								BOX_CHAR_LEN);
-							pos += BOX_CHAR_LEN;
+							String_append(&str,
+								DOWN_AND_LEFT);
 						}
 						else
 						{
-							memcpy(str + pos,
-								VERTICAL,
-								BOX_CHAR_LEN);
-							pos += BOX_CHAR_LEN;
+							String_append(&str,
+								VERTICAL);
 						}
 					}
 					else
@@ -684,63 +582,52 @@ char* generate_pretty_vertical_histogram(int values[], size_t values_len)
 						if (i > values[prev_idx]
 							&& i > values[next_idx])
 						{
-							str[pos++] = ' ';
+							String_append_char(&str, ' ');
 						}
 						else if (i != values[prev_idx]
 							&& i != values[next_idx])
 						{
-							memcpy(str + pos,
-								VERTICAL,
-								BOX_CHAR_LEN);
-							pos += BOX_CHAR_LEN;
+							String_append(&str,
+								VERTICAL);
 						}
 						else if (i == values[prev_idx]
 							&& i == values[next_idx])
 						{
-							memcpy(str + pos,
-								DOWN_AND_HORIZONTAL,
-								BOX_CHAR_LEN);
-							pos += BOX_CHAR_LEN;
+							String_append(&str,
+								DOWN_AND_HORIZONTAL);
 						}
 						else if (i == values[prev_idx]
 							&& i < values[next_idx])
 						{
-							memcpy(str + pos,
-								VERTICAL_AND_LEFT,
-								BOX_CHAR_LEN);
-							pos += BOX_CHAR_LEN;
+							String_append(&str,
+								VERTICAL_AND_LEFT);
 						}
 						else if (i == values[prev_idx]
 							&& i > values[next_idx])
 						{
-							memcpy(str + pos,
-								DOWN_AND_LEFT,
-								BOX_CHAR_LEN);
-							pos += BOX_CHAR_LEN;
+							String_append(&str,
+								DOWN_AND_LEFT);
 						}
 						else if (i < values[prev_idx]
 							&& i == values[next_idx])
 						{
-							memcpy(str + pos,
-								VERTICAL_AND_RIGHT,
-								BOX_CHAR_LEN);
-							pos += BOX_CHAR_LEN;
+							String_append(&str,
+								VERTICAL_AND_RIGHT);
 						}
 						else
 						{
-							memcpy(str + pos,
-								DOWN_AND_RIGHT,
-								BOX_CHAR_LEN);
-							pos += BOX_CHAR_LEN;
+							String_append(&str,
+								DOWN_AND_RIGHT);
 						}
 					}
 				}
 			}
 		}
-		str[pos++] = '\n';
+		if (i > bottom)
+		{
+			String_append_char(&str, '\n');
+		}
 	}
 
-	str[str_len] = '\0';
-
-	return str;
+	return str.data;
 }

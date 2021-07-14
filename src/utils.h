@@ -5,6 +5,32 @@
 #include <stddef.h>
 
 /*
+ * A utility structure that simplifies managing dynamically-allocated
+ * strings.
+ */
+typedef struct
+{
+	char *data;
+	size_t size;
+	size_t capacity;
+} String;
+
+/*
+ * Initializes 'str'.
+ */
+void String_init(String *str);
+
+/*
+ * Appends 'postfix' to 'str'.
+ */
+void String_append(String *str, char *postfix);
+
+/*
+ * Appends the character 'c' to 'str'.
+ */
+void String_append_char(String *str, char c);
+
+/*
  * Sums the positive elements in the array 'arr'.
  */
 int sum_positive(int arr[], size_t len);
