@@ -41,8 +41,8 @@ char* generate_horizontal_histogram(int values[], size_t values_len, char c)
 			{
 				str[pos++] = '|';
 			}
-			else if (j > 0 && values[i] > 0 && values[i] >= j
-				|| j < 0 && values[i] < 0 && values[i] <= j)
+			else if ((j > 0 && values[i] > 0 && values[i] >= j)
+				|| (j < 0 && values[i] < 0 && values[i] <= j))
 			{
 				str[pos++] = c;
 			}
@@ -77,8 +77,8 @@ char* generate_vertical_histogram(int values[], size_t values_len, char c)
 			{
 				str[pos++] = '-';
 			}
-			else if (i > 0 && values[j] > 0 && values[j] >= i
-				|| i < 0 && values[j] < 0 && values[j] <= i)
+			else if ((i > 0 && values[j] > 0 && values[j] >= i)
+				|| (i < 0 && values[j] < 0 && values[j] <= i))
 			{
 				str[pos++] = c;
 			}
@@ -432,7 +432,7 @@ char* generate_pretty_vertical_histogram(int values[], size_t values_len)
 
 	int i;
 	size_t j, pos = 0;
-	for (i = top; i >= ((bottom < 0) ? bottom : 0); --i)
+	for (i = top; i >= bottom; --i)
 	{
 		for (j = 0; j <= 2*values_len; ++j)
 		{

@@ -249,16 +249,24 @@ static void show_usage(char *program_name)
 Usage: %s [OPTIONS]\n\n\
 Generate a histogram from integers given on stdin.\n\n\
 Options:\n\
+", program_name);
+	printf("\
   --char <char>     Specify the ASCII character used for printing the \
 histogram.\n\
                     This option has no effect when the '--pretty' \
 option is given.\n\
+");
+	printf("\
   --help            Show help message and exit.\n\
+");
+	printf("\
   --layout <layout> Specify the layout of the bars in the histogram.\n\
                     <layout> can be 'horizontal' or 'vertical'.\n\
+");
+	printf("\
   --pretty          Pretty-print the histogram using Unicode Box \
 Drawing Characters.\n\
                     This option requires a terminal with UTF-8 \
 encoding to work properly.\n\
-", program_name);
+");
 }
