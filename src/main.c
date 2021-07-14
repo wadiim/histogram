@@ -72,7 +72,16 @@ int main(int argc, char **argv)
 	}
 	else
 	{
-		hist = generate_vertical_histogram(input, input_len, opts->c);
+		if (opts->pretty == true)
+		{
+			hist = generate_pretty_vertical_histogram(input,
+					input_len);
+		}
+		else
+		{
+			hist = generate_vertical_histogram(input,
+					input_len, opts->c);
+		}
 	}
 	printf("%s\n", hist);
 

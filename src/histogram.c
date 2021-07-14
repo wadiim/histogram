@@ -420,3 +420,327 @@ char* generate_pretty_horizontal_histogram(int values[], size_t values_len)
 
 	return str;
 }
+
+char* generate_pretty_vertical_histogram(int values[], size_t values_len)
+{
+	int top = max_val(values, values_len);
+	int minv = min_val(values, values_len);
+	int bottom = (minv < 0) ? minv : 0;
+	size_t str_len = 27*(top - bottom + ((minv < 0) ? 1 : 0))
+		*(values_len + 1) - 1;
+	char *str = malloc((str_len + 1)*sizeof(char));
+
+	int i;
+	size_t j, pos = 0;
+	for (i = top; i >= ((bottom < 0) ? bottom : 0); --i)
+	{
+		for (j = 0; j <= 2*values_len; ++j)
+		{
+			if (j % 2 != 0)
+			{
+				size_t curr_idx = (j - 1)/2;
+
+				if (i == 0 || i == values[curr_idx])
+				{
+					memcpy(str + pos, HORIZONTAL,
+						BOX_CHAR_LEN);
+					pos += BOX_CHAR_LEN;
+				}
+				else
+				{
+					str[pos++] = ' ';
+				}
+			}
+			else
+			{
+				size_t next_idx = j/2;
+				size_t prev_idx = (next_idx > 0) ?
+					next_idx - 1 : 0;
+
+				if (i == 0)
+				{
+					if (prev_idx == 0 && next_idx == 0)
+					{
+						if (values[next_idx] == 0)
+						{
+							memcpy(str + pos,
+								HORIZONTAL,
+								BOX_CHAR_LEN);
+						}
+						else if (values[next_idx] > 0)
+						{
+							memcpy(str + pos,
+								UP_AND_RIGHT,
+								BOX_CHAR_LEN);
+						}
+						else
+						{
+							memcpy(str + pos,
+								DOWN_AND_RIGHT,
+								BOX_CHAR_LEN);
+						}
+						pos += BOX_CHAR_LEN;
+					}
+					else if (next_idx == values_len)
+					{
+						if (values[prev_idx] == 0)
+						{
+							memcpy(str + pos,
+								HORIZONTAL,
+								BOX_CHAR_LEN);
+						}
+						else if (values[prev_idx] > 0)
+						{
+							memcpy(str + pos,
+								UP_AND_LEFT,
+								BOX_CHAR_LEN);
+						}
+						else
+						{
+							memcpy(str + pos,
+								DOWN_AND_LEFT,
+								BOX_CHAR_LEN);
+						}
+						pos += BOX_CHAR_LEN;
+					}
+					else
+					{
+						if (values[prev_idx] == 0
+							&& values[next_idx] == 0)
+						{
+							memcpy(str + pos,
+								HORIZONTAL,
+								BOX_CHAR_LEN);
+						}
+						else if (values[prev_idx] <= 0
+							&& values[next_idx] <= 0)
+						{
+							memcpy(str + pos,
+								DOWN_AND_HORIZONTAL,
+								BOX_CHAR_LEN);
+						}
+						else if (values[prev_idx] >= 0
+							&& values[next_idx] >= 0)
+						{
+							memcpy(str + pos,
+								UP_AND_HORIZONTAL,
+								BOX_CHAR_LEN);
+						}
+						else
+						{
+							memcpy(str + pos,
+								VERTICAL_AND_HORIZONTAL,
+								BOX_CHAR_LEN);
+						}
+						pos += BOX_CHAR_LEN;
+					}
+				}
+				else if (i < 0)
+				{
+					if (prev_idx == 0 && next_idx == 0)
+					{
+						if (i < values[next_idx])
+						{
+							str[pos++] = ' ';
+						}
+						else if (i == values[next_idx])
+						{
+							memcpy(str + pos,
+								DOWN_AND_RIGHT,
+								BOX_CHAR_LEN);
+							pos += BOX_CHAR_LEN;
+						}
+						else
+						{
+							memcpy(str + pos,
+								VERTICAL,
+								BOX_CHAR_LEN);
+							pos += BOX_CHAR_LEN;
+						}
+					}
+					else if (next_idx == values_len)
+					{
+						if (i < values[prev_idx])
+						{
+							str[pos++] = ' ';
+						}
+						else if (i == values[prev_idx])
+						{
+							memcpy(str + pos,
+								UP_AND_LEFT,
+								BOX_CHAR_LEN);
+							pos += BOX_CHAR_LEN;
+						}
+						else
+						{
+							memcpy(str + pos,
+								VERTICAL,
+								BOX_CHAR_LEN);
+							pos += BOX_CHAR_LEN;
+						}
+					}
+					else
+					{
+						if (i < values[prev_idx]
+							&& i < values[next_idx])
+						{
+							str[pos++] = ' ';
+						}
+						else if (i != values[prev_idx]
+							&& i != values[next_idx])
+						{
+							memcpy(str + pos,
+								VERTICAL,
+								BOX_CHAR_LEN);
+							pos += BOX_CHAR_LEN;
+						}
+						else if (i == values[prev_idx]
+							&& i == values[next_idx])
+						{
+							memcpy(str + pos,
+								UP_AND_HORIZONTAL,
+								BOX_CHAR_LEN);
+							pos += BOX_CHAR_LEN;
+						}
+						else if (i == values[prev_idx]
+							&& i < values[next_idx])
+						{
+							memcpy(str + pos,
+								UP_AND_LEFT,
+								BOX_CHAR_LEN);
+							pos += BOX_CHAR_LEN;
+						}
+						else if (i == values[prev_idx]
+							&& i > values[next_idx])
+						{
+							memcpy(str + pos,
+								VERTICAL_AND_LEFT,
+								BOX_CHAR_LEN);
+							pos += BOX_CHAR_LEN;
+						}
+						else if (i < values[prev_idx]
+							&& i == values[next_idx])
+						{
+							memcpy(str + pos,
+								UP_AND_RIGHT,
+								BOX_CHAR_LEN);
+							pos += BOX_CHAR_LEN;
+						}
+						else
+						{
+							memcpy(str + pos,
+								VERTICAL_AND_RIGHT,
+								BOX_CHAR_LEN);
+							pos += BOX_CHAR_LEN;
+						}
+					}
+				}
+				else
+				{
+					if (prev_idx == 0 && next_idx == 0)
+					{
+						if (i > values[next_idx])
+						{
+							str[pos++] = ' ';
+						}
+						else if (i == values[next_idx])
+						{
+							memcpy(str + pos,
+								DOWN_AND_RIGHT,
+								BOX_CHAR_LEN);
+							pos += BOX_CHAR_LEN;
+						}
+						else
+						{
+							memcpy(str + pos,
+								VERTICAL,
+								BOX_CHAR_LEN);
+							pos += BOX_CHAR_LEN;
+						}
+					}
+					else if (next_idx == values_len)
+					{
+						if (i > values[prev_idx])
+						{
+							str[pos++] = ' ';
+						}
+						else if (i == values[prev_idx])
+						{
+							memcpy(str + pos,
+								DOWN_AND_LEFT,
+								BOX_CHAR_LEN);
+							pos += BOX_CHAR_LEN;
+						}
+						else
+						{
+							memcpy(str + pos,
+								VERTICAL,
+								BOX_CHAR_LEN);
+							pos += BOX_CHAR_LEN;
+						}
+					}
+					else
+					{
+						if (i > values[prev_idx]
+							&& i > values[next_idx])
+						{
+							str[pos++] = ' ';
+						}
+						else if (i != values[prev_idx]
+							&& i != values[next_idx])
+						{
+							memcpy(str + pos,
+								VERTICAL,
+								BOX_CHAR_LEN);
+							pos += BOX_CHAR_LEN;
+						}
+						else if (i == values[prev_idx]
+							&& i == values[next_idx])
+						{
+							memcpy(str + pos,
+								DOWN_AND_HORIZONTAL,
+								BOX_CHAR_LEN);
+							pos += BOX_CHAR_LEN;
+						}
+						else if (i == values[prev_idx]
+							&& i < values[next_idx])
+						{
+							memcpy(str + pos,
+								VERTICAL_AND_LEFT,
+								BOX_CHAR_LEN);
+							pos += BOX_CHAR_LEN;
+						}
+						else if (i == values[prev_idx]
+							&& i > values[next_idx])
+						{
+							memcpy(str + pos,
+								DOWN_AND_LEFT,
+								BOX_CHAR_LEN);
+							pos += BOX_CHAR_LEN;
+						}
+						else if (i < values[prev_idx]
+							&& i == values[next_idx])
+						{
+							memcpy(str + pos,
+								VERTICAL_AND_RIGHT,
+								BOX_CHAR_LEN);
+							pos += BOX_CHAR_LEN;
+						}
+						else
+						{
+							memcpy(str + pos,
+								DOWN_AND_RIGHT,
+								BOX_CHAR_LEN);
+							pos += BOX_CHAR_LEN;
+						}
+					}
+				}
+			}
+		}
+		str[pos++] = '\n';
+	}
+
+	str[str_len] = '\0';
+
+	return str;
+}
