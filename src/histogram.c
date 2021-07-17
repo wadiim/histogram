@@ -472,7 +472,7 @@ char* generate_pretty_vertical_histogram(int values[], size_t values_len)
 						else if (i == values[next_idx])
 						{
 							String_append(&str,
-								DOWN_AND_RIGHT);
+								UP_AND_RIGHT);
 						}
 						else
 						{
