@@ -6,12 +6,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-enum Layout
-{
-	HORIZONTAL,
-	VERTICAL
-};
-
 typedef struct
 {
 	char c;
@@ -57,7 +51,7 @@ int main(int argc, char **argv)
 		exit(errno);
 	}
 
-	if (opts->layout == HORIZONTAL)
+	if (opts->layout == HORIZONTAL_LAYOUT)
 	{
 		if (opts->pretty == true)
 		{
@@ -106,7 +100,7 @@ static Options *parse_args(int argc, char **argv)
 	}
 	opts->c = '#';
 	opts->help = false;
-	opts->layout = HORIZONTAL;
+	opts->layout = HORIZONTAL_LAYOUT;
 	opts->pretty = false;
 
 	for (i = 1; i < argc; ++i)
@@ -150,11 +144,11 @@ static Options *parse_args(int argc, char **argv)
 			}
 			else if (strcmp(arg, "vertical") == 0)
 			{
-				opts->layout = VERTICAL;
+				opts->layout = VERTICAL_LAYOUT;
 			}
 			else if (strcmp(arg, "horizontal") == 0)
 			{
-				opts->layout = HORIZONTAL;
+				opts->layout = HORIZONTAL_LAYOUT;
 			}
 			else
 			{

@@ -3,6 +3,12 @@
 
 #include <stddef.h>
 
+enum Layout
+{
+	HORIZONTAL_LAYOUT,
+	VERTICAL_LAYOUT
+};
+
 /*
  * Generates horizontal histogram whose bar heights correspond to the values
  * in the 'values' array. Bars are made of the 'c' character. Returns
