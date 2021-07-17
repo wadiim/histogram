@@ -365,7 +365,8 @@ char* generate_pretty_horizontal_histogram(int values[], size_t values_len)
 
 char* generate_pretty_vertical_histogram(int values[], size_t values_len)
 {
-	int top = max_val(values, values_len);
+	int maxv = max_val(values, values_len);
+	int top = (maxv > 0) ? maxv : 0;
 	int minv = min_val(values, values_len);
 	int bottom = (minv < 0) ? minv : 0;
 	int i;
